@@ -1,0 +1,19 @@
+server:
+  port: 3000
+  servlet:
+    context-path: /
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/personal_learning_center?useUnicode=true&serverTimezone=UTC&useSSL=false
+    username: root
+    password: gongxiwu
+  jpa:
+    hibernate:
+      ddl-auto: update  # 自动更新
+    database: mysql
+    show-sql: true  # 打印sql
+
+
+
