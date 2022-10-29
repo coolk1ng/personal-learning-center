@@ -1,63 +1,53 @@
 package com.coolk1ng.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.coolk1ng.entity.Dept;
+import com.coolk1ng.entity.User;
+import com.coolk1ng.entity.vo.UserVO;
 import com.coolk1ng.mapper.UserMapper;
-import com.coolk1ng.pojo.entity.User;
+import com.coolk1ng.service.DeptService;
 import com.coolk1ng.service.UserService;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import xin.altitude.cms.common.util.EntityUtils;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
- * UserServiceImpl
+ * 书籍(User)ServiceImpl
  *
  * @author coolk1ng
- * @since 2022/9/16 01:47
+ * @since 2022-10-29 21:29:52
  */
-@Service("UserService")
+@Service("userService")
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
-    @Override
-    public List<User> getUserListByAllEq(User user) {
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("name", user.getName());
-        map.put("age", user.getAge());
-        map.put("user_id", "");
-        queryWrapper.allEq(map, false);
-        return baseMapper.selectList(queryWrapper);
-    }
+    @Autowired
+    private DeptService deptService;
 
     @Override
-    public User getUserByEq(String name) {
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        //queryWrapper.eq(StringUtils.isNotEmpty(user.getUserId()),"user_id","user1");
-        queryWrapper.eq(StringUtils.isNotEmpty(name), "name", name);
-        return baseMapper.selectOne(queryWrapper);
-    }
-
-    @Override
-    public IPage<User> getUserPage(User user) {
-        // 分页参数
-        Page<User> page = Page.of(2, 1);
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.ge("age",user.getAge());
-        return baseMapper.selectPage(page,queryWrapper);
-    }
-
-    @Override
-    public List<User> getUserListByIn(String ids) {
-        String[] idArr = ids.split(",");
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("id", Arrays.asList(idArr));
-        return baseMapper.selectList(queryWrapper);
+    public UserVO getOneUser(Integer userId) {
+        LambdaQueryWrapper<User> lambdaQuery = Wrappers.lambdaQuery(User.class).eq(User::getUserId, userId);
+        UserVO userVO = EntityUtils.toObj(getOne(lambdaQuery), UserVO::new);
+        // 从其他表查询信息封装vo
+        Optional.ofNullable(userVO).ifPresent(this::addDeptNameInfo);
+        return userVO;
     }
 
 
+    /**
+     * 设置部门名称信息
+     * @param userVO
+     * @return void
+     */
+    private void addDeptNameInfo(UserVO userVO) {
+        LambdaQueryWrapper<Dept> lambdaQuery = Wrappers.lambdaQuery(Dept.class).eq(Dept::getDeptId, userVO.getDeptId());
+        Dept dept = deptService.getOne(lambdaQuery);
+        Optional.ofNullable(dept).ifPresent(item -> userVO.setDepName(item.getDeptName()));
+    }
 }

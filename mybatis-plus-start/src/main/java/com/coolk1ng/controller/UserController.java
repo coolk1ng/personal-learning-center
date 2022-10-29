@@ -1,44 +1,30 @@
 package com.coolk1ng.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.coolk1ng.base.Result;
-import com.coolk1ng.pojo.entity.User;
+
+import com.coolk1ng.entity.vo.UserVO;
 import com.coolk1ng.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * UserController
+ * 书籍(User)Controller
  *
  * @author coolk1ng
- * @since 2022/9/18 00:15
+ * @since 2022-10-29 21:29:52
  */
-@RequestMapping("/user")
 @RestController
-public class UserController {
+@RequestMapping("/user")
+public class UserController{
 
     @Autowired
     private UserService userService;
 
-    @PostMapping("/getUserList")
-    public Result getUserList(@Valid @RequestBody User user, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            List<String> errorList = new ArrayList<>();
-            bindingResult.getAllErrors().forEach(item -> {
-                errorList.add(item.getDefaultMessage());
-            });
-            return Result.fail(errorList);
-        }
-        return Result.success(userService.list(new QueryWrapper<User>()
-                .eq("id",user.getId())
-                .eq("user_id",user.getUserId())));
+    @GetMapping(value = "/getOneUser/{userId}")
+    public UserVO getOneUser(@PathVariable("userId") Integer userId) {
+        return userService.getOneUser(userId);
     }
+
 }

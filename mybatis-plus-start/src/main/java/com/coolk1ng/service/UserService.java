@@ -1,44 +1,22 @@
 package com.coolk1ng.service;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.coolk1ng.pojo.entity.User;
-
-import java.util.List;
+import com.coolk1ng.entity.User;
+import com.coolk1ng.entity.vo.UserVO;
 
 /**
- * UserService
+ * 书籍(User)Service
  *
  * @author coolk1ng
- * @since 2022/9/16 01:46
+ * @since 2022-10-29 21:29:52
  */
 public interface UserService extends IService<User> {
 
-    /**
-     * allEq
-     * @param user
-     * @return List<User>
+    /** 
+     * 查询一名用户 (一名用户对应一个部门)
+     * @param userId 
+     * @return UserVO
      */
-    List<User> getUserListByAllEq(User user);
+    UserVO getOneUser(Integer userId);
 
-    /**
-     * eq
-     * @param name
-     * @return String
-     */
-    User getUserByEq(String name);
-
-    /**
-     * page
-     * @param user
-     * @return IPage<User>
-     */
-    IPage<User> getUserPage(User user);
-
-    /**
-     * in
-     * @param ids
-     * @return List<User>
-     */
-    List<User> getUserListByIn(String ids);
 }
