@@ -1,4 +1,4 @@
-package com.coolk1ng.util;
+package com.coolk1ng.jodatime;
 
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
